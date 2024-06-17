@@ -4,9 +4,9 @@
 #define ST(A) #A
 #define STR(A) ST(A)
 
-#ifdef VERSION
-#pragma message STR(VERSION)
-#endif
+//#ifdef VERSION
+//#pragma message STR(VERSION)
+//#endif
 
 #if (defined(ARDUINO_AVR_UNO) || defined(ESP8266))   // Using a soft serial port
 #include <SoftwareSerial.h>
@@ -26,6 +26,7 @@ void setup() {
   FPSerial.begin(9600, SERIAL_8N1, /*rx =*/D3, /*tx =*/D2);
 #else
   FPSerial.begin(9600, SWSERIAL_8N1);
+  FPSerial.listen();
 #endif
   
   Serial.println();
@@ -48,7 +49,7 @@ void setup() {
   Serial.println(F(" Files on SD-Card"));
 
   myDFPlayer.volume(20);  //Set volume value. From 0 to 30
-  myDFPlayer.play(1);  //Play the first mp3
+  myDFPlayer.playMp3Folder(1);  //Play the first mp3
 }
 
 void loop() {

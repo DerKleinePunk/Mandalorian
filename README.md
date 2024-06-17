@@ -3,3 +3,8 @@
 ## Documentation (German)
 
 [Index](documents/Dokumentation/Index.md)
+
+
+## Used Libs
+
+https://github.com/DFRobot/DFRobotDFPlayerMini
