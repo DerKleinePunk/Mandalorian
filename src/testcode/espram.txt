@@ -1,8 +1,42 @@
+#include <Arduino.h>
+
+#if (defined(ARDUINO_AVR_UNO) || defined(ESP8266))   // Using a soft serial port
+#include <SoftwareSerial.h>
+SoftwareSerial softSerial(/*rx =*/D0, /*tx =*/D1);
+#define FPSerial softSerial
+#else
+#define FPSerial Serial1
+#define RXD2 16
+#define TXD2 17
+int LED_BUILTIN = 2;
+
+extern uint32_t ESP_getFlashChipId(void);
+
+uint32_t ESP_getFlashChipRealSize(void)
+{
+  uint32_t id = (ESP_getFlashChipId() >> 16) & 0xFF;
+  return 2 << (id - 1);
+}
+#endif
+
+void setup() {
+  Serial.begin(115200);
+
+#if (defined(ESP8266))
   uint32_t realSize = ESP.getFlashChipRealSize();
+#elif(defined(ESP32))
+  uint32_t realSize = ESP_getFlashChipRealSize();
+#endif
+
   uint32_t ideSize = ESP.getFlashChipSize();
   FlashMode_t ideMode = ESP.getFlashChipMode();
-  
+
+#if (defined(ESP8266))
   Serial.printf("Reale Flash ID:   %08X\n", ESP.getFlashChipId());
+#elif(defined(ESP32))
+  Serial.printf("Reale Flash ID:   %08X\n", ESP_getFlashChipId());
+#endif
+
   Serial.printf("Reale Flash groesse: %u", realSize);
   Serial.print(" Byte\n\n");
   Serial.printf("In der IDE hinterlegte Flash groesse: %u", ideSize);
@@ -14,3 +48,12 @@
   } else {
     Serial.println("Flash konfigguration ist korrekt.\n");
   }
+
+  
+#if (defined(ESP32))
+  char string[16];
+  uint32_t f;
+  f = getCpuFrequencyMhz();
+  sprintf(string, "CPU Freq: %i", f);
+  Serial.println(string);
+#endif
