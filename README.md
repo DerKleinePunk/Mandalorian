@@ -7,6 +7,6 @@
 
 ## Used Libs
 
-https://github.com/DFRobot/DFRobotDFPlayerMini (work working for me)
+https://github.com/DFRobot/DFRobotDFPlayerMini (not work working for me)
 
 
