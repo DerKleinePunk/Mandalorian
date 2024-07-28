@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <DFPlayerMini.hpp>
 #include <MemoryStream.hpp>
+#include <SPI.h>
+#include <TFT_eSPI.h>
 
 #if defined(ESP32)
 #include "esp32.hpp"
@@ -8,17 +10,13 @@
 #include "esp8266.hpp"
 #endif
 
-#if !defined(LED_BUILTIN)
-#define LED_BUILTIN 2
-#endif
-
 DFPlayerMini player;
-    
+TFT_eSPI tft = TFT_eSPI();
+
 void setup()
 {
     Serial.begin(115200);
 
-    pinMode(LED_BUILTIN, OUTPUT);
 #if defined(_DEBUG)
     delay(500); // Wait Terminal ist online
 #endif
@@ -38,6 +36,15 @@ void setup()
             delay(0); // Code to compatible with ESP8266 watch dog.
         }
     }
+
+    tft.init();
+
+    tft.setRotation(2);
+    tft.setTextSize(2);
+    tft.setCursor(0, 0);
+    tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_WHITE,TFT_BLACK);  
+    tft.println(F("Starting"));
 
     player.volume(10);  //Set volume value. From 0 to 30
     player.firmwareVersion();
