@@ -19,6 +19,9 @@ void setup()
     Serial.begin(115200);
 
     pinMode(LED_BUILTIN, OUTPUT);
+#if defined(_DEBUG)
+    delay(500); // Wait Terminal ist online
+#endif
 
 #if(defined ESP32)
     PrintChipInfo();

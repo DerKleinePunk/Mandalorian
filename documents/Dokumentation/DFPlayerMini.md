@@ -1,3 +1,4 @@
+chip i used MP3-TF-16P V3.0 with crasy Firmware 
 source https://wolles-elektronikkiste.de/dfplayer-mini-ansteuerung-mit-dem-arduino
 
 1. Standardverzeichnisse
