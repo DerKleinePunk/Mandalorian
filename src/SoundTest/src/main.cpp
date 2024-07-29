@@ -30,7 +30,7 @@ void setup()
 #else
     MemoryStream FPSerial;
 #endif
-    if(!player.begin(&FPSerial)){ 
+    if(!player.begin(&FPSerial)){
         Serial.println(F("Unable to connect player wait for reset"));
         while(true){
             delay(0); // Code to compatible with ESP8266 watch dog.
@@ -39,17 +39,17 @@ void setup()
 
     tft.init();
 
-    tft.setRotation(2);
+    tft.setRotation(1);
     tft.setTextSize(2);
     tft.setCursor(0, 0);
     tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_WHITE,TFT_BLACK);  
+    tft.setTextColor(TFT_WHITE,TFT_BLACK);
     tft.println(F("Starting"));
 
     player.volume(10);  //Set volume value. From 0 to 30
     player.firmwareVersion();
     player.playMp3Folder(1);
-    
+
 }
 
 void loop()

@@ -5,7 +5,7 @@ bool DFPlayerMini::HandleMessage()
     if(!validateMessage()) return false;
 
     uint8_t handleCommand = *(_receiveBuffer + Message_Pos_Command);
-    if (handleCommand == 0x41) { 
+    if (handleCommand == 0x41) {
       //handle the 0x41 ack feedback as a spcecial case, in case the pollusion of _handleCommand, _handleParameter, and _handleType.
 #ifdef _DEBUG
       Serial.println(F("ack received"));
@@ -88,7 +88,7 @@ void DFPlayerMini::sendMessage() {
   if(_isSending) {
     waitAvailable();
   }
-  
+
   if(_sendBuffer[Message_Pos_ACK] == 0x01)   {
     _isSending = true;
 #ifdef _DEBUG
@@ -116,7 +116,7 @@ void DFPlayerMini::sendMessage(uint8_t command, uint16_t argument)
 {
   _sendBuffer[Message_Pos_Command] = command;
   uint16ToArray(argument, _sendBuffer+Message_Pos_Parameter);
-  
+
   //Query Comands hast no Ack
   if(_sendBuffer[Message_Pos_Command] >= 0x3C ) {
     _sendBuffer[Message_Pos_ACK] = 0x00;
@@ -142,7 +142,7 @@ void DFPlayerMini::handleMessage(PlayerMessage message, uint16_t parameter) {
   _playerMessageParameter = parameter;
 
   //Todo PlayFinish parameter is the Tracknumber
-  
+
 #ifdef _DEBUG
   Serial.print(F("Message "));
   Serial.print(message);
@@ -154,10 +154,30 @@ void DFPlayerMini::handleMessage(PlayerMessage message, uint16_t parameter) {
   if(message == PlayerMessage::Error) {
     switch (parameter)
     {
+      case 0x01:
+        Serial.println(F("modul busy"));
+        break;
+      case 0x02:
+        Serial.println(F("sleep mode"));
+        break;
+      case 0x03:
+        Serial.println(F("serial receiving error"));
+        break;
       case 0x04:
         Serial.println(F("checksum error"));
         break;
-      
+      case 0x05:
+        Serial.println(F("track is out of current track scope"));
+        break;
+      case 0x06:
+        Serial.println(F("track is not found"));
+        break;
+      case 0x07:
+        Serial.println(F("Inter-cut error"));
+        break;
+      case 0x08:
+        Serial.println(F("SD card reading failed"));
+        break;
       default:
         Serial.println(F("unkown error"));
         break;
@@ -207,7 +227,7 @@ bool DFPlayerMini::begin(Stream* serial, bool isACK, bool doReset)
     _ackMode = false;
     //disableACK();
   }
-  
+
   if (doReset) {
     reset();
     waitAvailable(2000);
@@ -230,7 +250,7 @@ bool DFPlayerMini::available(){
       }
 #endif
         delay(0);
-        
+
         auto currentInput = _serial->read();
 #ifdef _DEBUG
         Serial.print(currentInput,HEX);
@@ -241,7 +261,7 @@ bool DFPlayerMini::available(){
             _receiveBuffer[_posInReadStream] = MessageStart;
             _posInReadStream++;
             continue;
-        } 
+        }
 
         _receiveBuffer[_posInReadStream] = currentInput;
         _posInReadStream++;
