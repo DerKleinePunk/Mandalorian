@@ -6,6 +6,10 @@
 		{
 			"name": "SoundTest",
 			"path": "src/SoundTest"
+		},
+		{
+			"name": "ESPNowWithBLSerial",
+			"path": "../../PlattformIO/ESPNowWithBLSerial"
 		}
 	],
 	"settings": {
