@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef UNIT_TEST
-    #include "ArduinoFake.h"
+#include "ArduinoFake.h"
 #else
-    #include "Arduino.h"
+#include "Arduino.h"
 #endif
 
 #define MessageStart 0x7E
@@ -20,28 +20,17 @@
 #define Message_Pos_Parameter 5
 #define Message_Pos_CheckSum 7
 
-enum PlayerMessage: uint8_t
-{
-    PlayFinished,
-    Online,
-    FeedBack,
-    Error
-};
+enum PlayerMessage : uint8_t { PlayFinished, Online, FeedBack, Error };
 
-enum PlayerDevice: uint8_t
-{
-    Usb,
-    Card,
-    Flash
-};
+enum PlayerDevice : uint8_t { Usb, Card, Flash };
 
 class DFPlayerMini
 {
-private:
+  private:
     Stream* _serial;
     uint8_t _posInReadStream;
     uint8_t _receiveBuffer[DFPLAYER_RECEIVED_LENGTH];
-    uint8_t _sendBuffer[DFPLAYER_SEND_LENGTH] = {0x7E, 0xFF, 06, 00, 01, 00, 00, 00, 00, 0xEF};
+    uint8_t _sendBuffer[DFPLAYER_SEND_LENGTH] = { 0x7E, 0xFF, 06, 00, 01, 00, 00, 00, 00, 0xEF };
     bool _isSending;
     PlayerMessage _playerMessage;
     uint16_t _playerMessageParameter;
@@ -51,10 +40,10 @@ private:
     bool _ackMode;
 
     bool HandleMessage();
-    uint16_t calculateCheckSum(uint8_t *buffer);
+    uint16_t calculateCheckSum(uint8_t* buffer);
     bool validateMessage();
-    uint16_t arrayToUint16(uint8_t *array);
-    void uint16ToArray(uint16_t value, uint8_t *array);
+    uint16_t arrayToUint16(uint8_t* array);
+    void uint16ToArray(uint16_t value, uint8_t* array);
 
     void sendMessage();
     void sendMessage(uint8_t command);
@@ -63,7 +52,8 @@ private:
 
     void handleMessage(PlayerMessage message, uint16_t parameter);
     bool waitAvailable(unsigned long duration = 0);
-public:
+
+  public:
     DFPlayerMini();
     ~DFPlayerMini();
 
@@ -76,5 +66,5 @@ public:
     int readCurrentFileNumber(PlayerDevice device);
     int firmwareVersion();
     void volume(uint8_t volume);
+    int getCurrentStatus();
 };
-

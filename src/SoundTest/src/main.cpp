@@ -49,7 +49,11 @@ void setup()
     player.volume(10);  //Set volume value. From 0 to 30
     player.firmwareVersion();
     player.playMp3Folder(1);
-
+    delay(200);
+    
+    auto state = player.getCurrentStatus();
+    Serial.printf("player state %d", state);
+    Serial.println();
 }
 
 void loop()
@@ -63,6 +67,7 @@ void loop()
         auto message = player.getMessage(parameter);
         if(message == PlayerMessage::PlayFinished) {
             player.next();
+            delay(200);
             auto fileNumber = player.readCurrentFileNumber(PlayerDevice::Card);
             Serial.printf("We play %d", fileNumber);
             Serial.println();
