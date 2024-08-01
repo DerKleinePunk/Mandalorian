@@ -8,7 +8,8 @@ https://github.com/DFRobot/DFRobotDFPlayerMini/blob/master/doc/FN-M16P%2BEmbedde
 
 https://wolles-elektronikkiste.de/esp-now
 
-
 http://api.open-notify.org/astros.json
+
+https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
 
 [zurück](Index.md)

@@ -15,7 +15,9 @@
 	"settings": {
 		"files.associations": {
 			".fantomasignore": "ignore",
-			"ostream": "cpp"
+			"ostream": "cpp",
+			"ranges": "cpp",
+			"new": "cpp"
 		}
 	}
 }
