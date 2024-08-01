@@ -1,13 +1,13 @@
 #pragma once
 
+#include <TFT_eSPI.h>
 #include <lvgl.h>
 
 class Gui
 {
 private:
+    lv_display_t * _display;
     TFT_eSPI* _tft;
-    ButtonWidget* _btnOne;
-    ButtonWidget* _btnTwo;
 public:
     Gui(TFT_eSPI* tft);
     ~Gui();

@@ -12,4 +12,6 @@ http://api.open-notify.org/astros.json
 
 https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
 
+https://randomnerdtutorials.com/lvgl-esp32-tft-touchscreen-display-ili9341-arduino/
+
 [zurück](Index.md)

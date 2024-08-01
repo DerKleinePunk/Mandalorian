@@ -46,10 +46,12 @@ void touch_calibrate()
         tft.calibrateTouch(calData, TFT_MAGENTA, TFT_BLACK, 15);
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
         tft.println(F("Calibration complete!"));
-        preferences.putBytes("TouchCali", calData, 5);
+        Serial.printf("Cali %d %d %d %d %d\n", calData[0], calData[1], calData[2], calData[3], calData[4]);
+        preferences.putBytes("TouchCali", calData, 10);
 
     } else {
-        preferences.getBytes("TouchCali", calData, 5);
+        preferences.getBytes("TouchCali", calData, 10);
+        Serial.printf("Cali %d %d %d %d %d\n", calData[0], calData[1], calData[2], calData[3], calData[4]);
         tft.setTouch(calData);
     }
 }
@@ -80,12 +82,12 @@ void setup()
 
     tft.init();
 
-    tft.setRotation(1);
+    tft.setRotation(0);
     tft.setTextSize(2);
     tft.setCursor(0, 0);
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.println(F("Starting"));
+    tft.println(F("Starting..."));
 
     preferences.begin("Mando", false);
 
@@ -117,6 +119,8 @@ void loop()
             Serial.println();
         }
     }
+
+    lv_task_handler();
 
     uint16_t t_x = 0, t_y = 0;
     if (millis() - scanTime >= 50) {
