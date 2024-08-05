@@ -2,7 +2,7 @@
 #include <Preferences.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include <FastLED.h>
+#include <Adafruit_NeoPixel.h>
 
 #include <DFPlayerMini.hpp>
 #include <MemoryStream.hpp>
@@ -19,7 +19,7 @@
 #define LED_COUNT 2
 #define LED_PIN 32
 
-CRGB leds[LED_COUNT];
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_RGB + NEO_KHZ800);
 
 DFPlayerMini player;
 TFT_eSPI tft = TFT_eSPI();
@@ -76,19 +76,19 @@ static void periodic_timer_callback(void* arg)
     // ESP_LOGI(TAG, "Periodic timer called, time since boot: %lld us", time_since_boot);
 
     if(ledPrg == 0) {
-        leds[0] = CRGB::Green;
-        leds[0] = CRGB::Black;
-        FastLED.show();
+        strip.setPixelColor(0, 255,0,0);     // color the first LED in red
+        strip.setPixelColor(1, 0,0,255);
+        strip.show();
         ledPrg = 1;
     } else if(ledPrg == 1) {
-        leds[0] = CRGB::Yellow;
-        leds[1] = CRGB::Green;
-        FastLED.show();
+        strip.setPixelColor(0, 255,255,0);     // color the first LED in red
+        strip.setPixelColor(1, 0,255,255);
+        strip.show();
         ledPrg = 2;
     } else if(ledPrg == 2) {
-        leds[0] = CRGB::Red;
-        leds[1] = CRGB::Coral;
-        FastLED.show();
+        strip.setPixelColor(0, 255,255,255);     // color the first LED in red
+        strip.setPixelColor(1, 255,255,255);
+        strip.show();
         ledPrg = 0;
     }
 }
@@ -151,10 +151,13 @@ void setup()
 
     ESP_LOGI(TAG, "Started timers, time since boot: %lld us", esp_timer_get_time());
 
-    FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, LED_COUNT);
-    leds[0] = CRGB::Green;
-    FastLED.show();
-    FastLED.setBrightness(10);
+    strip.begin();
+    strip.setBrightness(2); 
+    strip.show();
+
+    strip.setPixelColor(0, 255,0,0);     // color the first LED in red
+    strip.setPixelColor(1, 0,0,255);
+    strip.show();
 }
 
 void loop()
