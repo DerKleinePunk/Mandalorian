@@ -2,6 +2,7 @@
 #include <Preferences.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
+#include <FastLED.h>
 
 #include <DFPlayerMini.hpp>
 #include <MemoryStream.hpp>
@@ -14,14 +15,27 @@
 #include "esp8266.hpp"
 #endif
 
+#define REPEAT_CALIBRATE false
+#define LED_COUNT 2
+#define LED_PIN 32
+
+CRGB leds[LED_COUNT];
+
 DFPlayerMini player;
 TFT_eSPI tft = TFT_eSPI();
 Preferences preferences;
 Gui ui(&tft);
 
-#define REPEAT_CALIBRATE false
+static const char* TAG = "main";
+static uint8_t ledPrg = 0;
 
-void touch_calibrate()
+/*    ESP_LOGE(TAG, "ESP_LOGE, level 1 = ARDUHAL_LOG_LEVEL_ERROR   = ESP_LOG_ERROR");
+    ESP_LOGW(TAG, "ESP_LOGW, level 2 = ARDUHAL_LOG_LEVEL_WARN    = ESP_LOG_WARN");
+    ESP_LOGI(TAG, "ESP_LOGI, level 3 = ARDUHAL_LOG_LEVEL_INFO    = ESP_LOG_INFO");
+    ESP_LOGD(TAG, "ESP_LOGD, level 4 = ARDUHAL_LOG_LEVEL_DEBUG   = ESP_LOG_DEBUG");
+    ESP_LOGV(TAG, "ESP_LOGV, level 5 = ARDUHAL_LOG_LEVEL_VERBOSE = ESP_LOG_VERBOSE");   */
+
+static void touch_calibrate()
 {
     uint16_t calData[5];
     auto exists = preferences.isKey("TouchCali");
@@ -38,7 +52,7 @@ void touch_calibrate()
         tft.setTextFont(1);
         tft.println();
 
-        if (REPEAT_CALIBRATE) {
+        if(REPEAT_CALIBRATE) {
             tft.setTextColor(TFT_RED, TFT_BLACK);
             tft.println(F("Set REPEAT_CAL to false to stop this running again!"));
         }
@@ -53,6 +67,29 @@ void touch_calibrate()
         preferences.getBytes("TouchCali", calData, 10);
         Serial.printf("Cali %d %d %d %d %d\n", calData[0], calData[1], calData[2], calData[3], calData[4]);
         tft.setTouch(calData);
+    }
+}
+
+static void periodic_timer_callback(void* arg)
+{
+    // int64_t time_since_boot = esp_timer_get_time();
+    // ESP_LOGI(TAG, "Periodic timer called, time since boot: %lld us", time_since_boot);
+
+    if(ledPrg == 0) {
+        leds[0] = CRGB::Green;
+        leds[0] = CRGB::Black;
+        FastLED.show();
+        ledPrg = 1;
+    } else if(ledPrg == 1) {
+        leds[0] = CRGB::Yellow;
+        leds[1] = CRGB::Green;
+        FastLED.show();
+        ledPrg = 2;
+    } else if(ledPrg == 2) {
+        leds[0] = CRGB::Red;
+        leds[1] = CRGB::Coral;
+        FastLED.show();
+        ledPrg = 0;
     }
 }
 
@@ -102,6 +139,22 @@ void setup()
 
     touch_calibrate();
     ui.begin();
+
+    const esp_timer_create_args_t periodic_timer_args = { .callback = &periodic_timer_callback,
+                                                          /* name is optional, but may help identify the timer when debugging */
+                                                          .name = "second Clock" };
+
+    esp_timer_handle_t periodic_timer;
+    ESP_ERROR_CHECK(esp_timer_create(&periodic_timer_args, &periodic_timer));
+
+    ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 1000000));
+
+    ESP_LOGI(TAG, "Started timers, time since boot: %lld us", esp_timer_get_time());
+
+    FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, LED_COUNT);
+    leds[0] = CRGB::Green;
+    FastLED.show();
+    FastLED.setBrightness(10);
 }
 
 void loop()
@@ -112,18 +165,18 @@ void loop()
         uint16_t parameter;
         auto message = player.getMessage(parameter);
         if(message == PlayerMessage::PlayFinished) {
-            player.next();
+            /*player.next();
             delay(200);
             auto fileNumber = player.readCurrentFileNumber(PlayerDevice::Card);
             Serial.printf("We play %d", fileNumber);
-            Serial.println();
+            Serial.println();*/
         }
     }
 
     lv_task_handler();
 
     uint16_t t_x = 0, t_y = 0;
-    if (millis() - scanTime >= 50) {
+    if(millis() - scanTime >= 50) {
         bool pressed = tft.getTouch(&t_x, &t_y);
         scanTime = millis();
         ui.update(pressed, t_x, t_y);
@@ -131,6 +184,5 @@ void loop()
         if(pressed) {
             Serial.println("X= " + String(t_x) + " | Y= " + String(t_y));
         }
-
     }
 }

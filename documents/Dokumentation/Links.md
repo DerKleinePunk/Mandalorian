@@ -14,4 +14,9 @@ https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
 
 https://randomnerdtutorials.com/lvgl-esp32-tft-touchscreen-display-ili9341-arduino/
 
+[LogLevel](https://esp32.com/viewtopic.php?t=5730)
+
+[LED Fire](https://pastebin.com/xYEpxqgq)
+[fastled](https://fastled.io/docs/index.html)
+
 [zurück](Index.md)

@@ -1,5 +1,6 @@
 #include "Gui.hpp"
 #include <lvgl.h>
+#include <esp_log.h>
 
 /*LVGL draw into this buffer, 1/10 screen size usually works well. The size is in bytes*/
 #define DRAW_BUF_SIZE (TFT_HEIGHT * TFT_WIDTH / 10 * (LV_COLOR_DEPTH / 8))
