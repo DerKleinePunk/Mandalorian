@@ -19,4 +19,6 @@ https://randomnerdtutorials.com/lvgl-esp32-tft-touchscreen-display-ili9341-ardui
 [LED Fire](https://pastebin.com/xYEpxqgq)
 [fastled](https://fastled.io/docs/index.html)
 
+[K.I.T.T](https://github.com/Aircoookie/WLED/blob/3615ab535b3ebfb77a175a4cb2949d0a4a516143/wled00/FX.cpp#L1128)
+
 [zurück](Index.md)

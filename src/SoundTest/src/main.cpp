@@ -16,10 +16,10 @@
 #endif
 
 #define REPEAT_CALIBRATE false
-#define LED_COUNT 2
+#define LED_COUNT 5
 #define LED_PIN 32
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 DFPlayerMini player;
 TFT_eSPI tft = TFT_eSPI();
@@ -27,7 +27,8 @@ Preferences preferences;
 Gui ui(&tft);
 
 static const char* TAG = "main";
-static uint8_t ledPrg = 0;
+uint8_t ledPrg = 0;
+bool up = true;
 
 /*    ESP_LOGE(TAG, "ESP_LOGE, level 1 = ARDUHAL_LOG_LEVEL_ERROR   = ESP_LOG_ERROR");
     ESP_LOGW(TAG, "ESP_LOGW, level 2 = ARDUHAL_LOG_LEVEL_WARN    = ESP_LOG_WARN");
@@ -70,12 +71,35 @@ static void touch_calibrate()
     }
 }
 
+void rainbow(int wait) {
+  // Hue of first pixel runs 3 complete loops through the color wheel.
+  // Color wheel has a range of 65536 but it's OK if we roll over, so
+  // just count from 0 to 3*65536. Adding 256 to firstPixelHue each time
+  // means we'll make 3*65536/256 = 768 passes through this outer loop:
+  for(long firstPixelHue = 0; firstPixelHue < 3*65536; firstPixelHue += 256) {
+    for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
+      // Offset pixel hue by an amount to make one full revolution of the
+      // color wheel (range of 65536) along the length of the strip
+      // (strip.numPixels() steps):
+      int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+      // optionally add saturation and value (brightness) (each 0 to 255).
+      // Here we're using just the single-argument hue variant. The result
+      // is passed through strip.gamma32() to provide 'truer' colors
+      // before assigning to each pixel:
+      strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+    }
+    strip.show(); // Update strip with new contents
+    delay(wait);  // Pause for a moment
+  }
+}
+
 static void periodic_timer_callback(void* arg)
 {
     // int64_t time_since_boot = esp_timer_get_time();
     // ESP_LOGI(TAG, "Periodic timer called, time since boot: %lld us", time_since_boot);
 
-    if(ledPrg == 0) {
+    /*if(ledPrg == 0) {
         strip.setPixelColor(0, 255,0,0);     // color the first LED in red
         strip.setPixelColor(1, 0,0,255);
         strip.show();
@@ -90,7 +114,24 @@ static void periodic_timer_callback(void* arg)
         strip.setPixelColor(1, 255,255,255);
         strip.show();
         ledPrg = 0;
+    }*/
+
+    if(up){
+        if(ledPrg == 250) up = false;
+        ledPrg = ledPrg + 5;
+    } else {
+        ledPrg = ledPrg - 5;
+        if(ledPrg == 0) up = true;
     }
+    Serial.printf("setBrightness %d\n", ledPrg);
+
+    strip.setBrightness(ledPrg);
+    strip.setPixelColor(0, 0,255,0);
+    strip.setPixelColor(1, 0,255,0);
+    strip.setPixelColor(2, 0,255,0);
+    strip.setPixelColor(3, 0,255,0);
+    strip.setPixelColor(4, 0,255,0);
+    strip.show();
 }
 
 void setup()
@@ -152,11 +193,14 @@ void setup()
     ESP_LOGI(TAG, "Started timers, time since boot: %lld us", esp_timer_get_time());
 
     strip.begin();
-    strip.setBrightness(2); 
+    strip.setBrightness(2);
     strip.show();
 
     strip.setPixelColor(0, 255,0,0);     // color the first LED in red
     strip.setPixelColor(1, 0,0,255);
+    strip.setPixelColor(2, 0,0,255);
+    strip.setPixelColor(3, 0,0,255);
+    strip.setPixelColor(4, 0,0,255);
     strip.show();
 }
 
@@ -177,6 +221,8 @@ void loop()
     }
 
     lv_task_handler();
+
+    //rainbow(10);
 
     uint16_t t_x = 0, t_y = 0;
     if(millis() - scanTime >= 50) {
